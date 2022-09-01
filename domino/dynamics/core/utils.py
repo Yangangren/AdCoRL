@@ -779,7 +779,7 @@ def create_ensemble_multiheaded_context_predictor(
                 cons_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
                 # cons_loss = tf.reduce_mean(cons_loss, name='xentropy-loss')
                 contrastive_loss = contrastive_loss + cons_loss
-                return contrastive_loss
+            return contrastive_loss
 
         def infer_info_nce_C(ori_fea,online_ori_fea):
             shuffle_batch_fea = tf.transpose(ori_fea, perm=[1, 0, 2])
@@ -810,7 +810,7 @@ def create_ensemble_multiheaded_context_predictor(
                 cons_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
                 # cons_loss = tf.reduce_mean(cons_loss, name='xentropy-loss')
                 contrastive_loss = contrastive_loss + cons_loss
-                return contrastive_loss
+            return contrastive_loss
 
 
         def con_forward(xx, inference=False):
