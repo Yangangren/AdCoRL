@@ -490,8 +490,8 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
                     min_traj_losses * head_idx_bool, axis=1
                 ) / tf.compat.v1.maximum(tf.compat.v1.reduce_sum(head_idx_bool, axis=1), 1.0)
 
-            self.mse_loss = tf.compat.v1.reduce_sum(mse_loss)+self.contrastive_loss*0.001
-            self.ie_mse_loss = tf.compat.v1.reduce_sum(ie_mse_loss)+self.contrastive_loss*0.001
+            self.mse_loss = tf.compat.v1.reduce_sum(mse_loss)+self.contrastive_loss*5e-8
+            self.ie_mse_loss = tf.compat.v1.reduce_sum(ie_mse_loss)+self.contrastive_loss*5e-8
             self.norm_pred_error = tf.compat.v1.reduce_mean(min_traj_losses)
 
             # 2. Backward Dynamics Prediction Loss
@@ -1379,7 +1379,7 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
             )
 
             """ Training dynamics model """
-            mse_losses, back_mse_losses, pred_errors, recon_losses = [], [], [], []
+            mse_losses, back_mse_losses, pred_errors, recon_losses, contra_losses = [], [], [], [], []
             bootstrap_idx = shuffle_rows(bootstrap_idx)
 
             """ ------- Looping through the shuffled and batched dataset for one epoch -------"""
@@ -1474,13 +1474,14 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
 
 
                 else:
-                    mse_loss, back_mse_loss, recon_loss, pred_error, _ = sess.run(
+                    mse_loss, back_mse_loss, recon_loss, pred_error, _ , contrastive_l = sess.run(
                         [
                             self.mse_loss,
                             self.back_mse_loss,
                             self.recon_loss,
                             self.norm_pred_error,
                             self.train_op,
+                            self.contrastive_loss,
                         ],
                         feed_dict=feed_dict,
                     )
@@ -1490,6 +1491,7 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
                 back_mse_losses.append(back_mse_loss)
                 recon_losses.append(recon_loss)
                 pred_errors.append(pred_error)
+                contra_losses.append(contrastive_l)
 
             """ ------- Validation -------"""
             if n_valid_split > 0:
@@ -1498,13 +1500,14 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
                 if verbose:
                     logger.log(
                         "Training DynamicsModel - finished epoch %i --"
-                        "[Training] domino loss: %.4f  back mse loss: %.4f  recon loss: %.4f  pred error: %.4f  epoch time: %.2f"
+                        "[Training] domino loss: %.4f  back mse loss: %.4f  recon loss: %.4f  pred error: %.4f contra loss: %.4f epoch time: %.2f"
                         % (
                             epoch,
                             np.mean(mse_losses),
                             np.mean(back_mse_losses),
                             np.mean(recon_losses),
                             np.mean(pred_errors),
+                            np.mean(contra_losses),
                             time.time() - t0,
                         )
                     )

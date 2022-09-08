@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Trajectory-wise MCL")
     parser.add_argument("--save_name", default="domino/", help="experiments name")
     parser.add_argument("--seed", type=int, default=0, help="random_seed")
-    parser.add_argument("--dataset", default="halfcheetah", help="environment flag")
+    parser.add_argument("--dataset", default="hopper", help="environment flag")
     parser.add_argument(
         "--hidden_size", type=int, default=200, help="size of hidden feature"
     )
@@ -159,14 +159,14 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=0.001, help="learning_rate")
     parser.add_argument("--horizon", type=int, default=30, help="horrizon for planning")
     parser.add_argument(
-        "--normalize_flag", action="store_true", help="flag to normalize"
+        "--normalize_flag", default=True, action="store_true", help="flag to normalize"
     )
     parser.add_argument("--total_test", type=int, default=20, help="# of test")
     parser.add_argument(
         "--n_candidate", type=int, default=200, help="candidate for planning"
     )
     parser.add_argument(
-        "--no_test_flag", action="store_true", help="flag to disable test"
+        "--no_test_flag", default=True, action="store_true", help="flag to disable test"
     )
     parser.add_argument(
         "--only_test_flag", action="store_true", help="flag to enable only test"

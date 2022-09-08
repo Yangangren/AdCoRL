@@ -682,7 +682,7 @@ def create_ensemble_multiheaded_context_predictor(
         l2_regs += [head_l2_reg]
 
         con_head_layers = []
-        for head_idx in range(2):
+        for head_idx in range(1):
             con_head_layer, _ = create_dense_layer(
                 name="cp_output_head_{}".format(head_idx),
                 ensemble_size=ensemble_size,
@@ -721,7 +721,7 @@ def create_ensemble_multiheaded_context_predictor(
         def cons_head_infer_pre(xx):
             output_heads = []
             con_head_xx_pre = head_layer_pre(xx)
-            for i in range(2):
+            for i in range(1):
                 output_heads.append(con_head_xx_pre)
             return output_heads
 
@@ -733,7 +733,7 @@ def create_ensemble_multiheaded_context_predictor(
             output_head = head_layer(xx)
             cons_head = cons_head_infer(online_ori_fea)
             #cons_head = head_layer(online_ori_fea)
-            output=tf.concat([tf.expand_dims(output_head,0), tf.expand_dims(cons_head[0],0), tf.expand_dims(cons_head[1],0)], 0)
+            output=tf.concat([tf.expand_dims(output_head,0), tf.expand_dims(output_head,0), tf.expand_dims(cons_head[0],0)], 0)
 
             # print(output_head.shape)
             # print(cons_head.shape)
@@ -805,7 +805,7 @@ def create_ensemble_multiheaded_context_predictor(
                 l_pos = tf.reshape(tf.einsum('nc,nc->n', q_feat, key_feat), (-1, 1))  # nx1
                 l_neg = tf.einsum('nc,kc->nk', q_feat, queue)  # nxK
                 logits = tf.concat([l_pos, l_neg], axis=1)  # nx(1+k)
-                logits = logits * (1 / 0.004)
+                logits = logits * (1 / 0.01)
                 labels = tf.cast(tf.zeros_like(q_feat)[:, 0], tf.int32)  # n
                 cons_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
                 # cons_loss = tf.reduce_mean(cons_loss, name='xentropy-loss')
@@ -822,9 +822,7 @@ def create_ensemble_multiheaded_context_predictor(
             #print ("online_ori_feas",online_ori_feas)
             for ori_fea,online_ori_fea in zip(ori_feas,online_ori_feas):
                 contrastive_loss += infer_info_nce(tf.stop_gradient(ori_fea),online_ori_fea)
-            d = (infer_info_nce_C(tf.stop_gradient(online_ori_feas[0]),online_ori_feas[1])+infer_info_nce_C(online_ori_feas[1], tf.stop_gradient(online_ori_feas[0])))/2
-
-            return contrastive_loss -d
+            return contrastive_loss
 
     bs_normalized_input_cp_obs = normalize(
         bs_input_cp_obs_var, norm_cp_obs_mean_var, norm_cp_obs_std_var

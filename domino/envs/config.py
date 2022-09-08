@@ -107,13 +107,11 @@ def get_environment_config(config):
 
     elif config["dataset"] == "hopper":
         train_mass_scale_set = [0.5, 0.75, 1.0, 1.25, 1.5]
-        train_damping_scale_set = [0.5, 0.75, 1.0, 1.25, 1.5]
-        config["num_test"] = 4
+        train_damping_scale_set = [1.0]
+        config["num_test"] = 2
         config["test_range"] = [
-            [[0.25, 0.375], [0.25, 0.375]],
-            [[0.25, 0.375], [1.75, 2.0]],
-            [[1.75, 2.0], [0.25, 0.375]],
-            [[1.75, 2.0], [1.75, 2.0]],
+            [[0.25, 0.375], [1.0]],
+            [[1.75, 2.0], [1.0]],
         ]
         env = HopperEnv(
             mass_scale_set=train_mass_scale_set,
