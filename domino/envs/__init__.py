@@ -1,5 +1,5 @@
 import os
-os.environ['LD_LIBRARY_PATH']='$LD_LIBRARY_PATH:/home/guanyang/.mujoco/mujoco200/bin'
+os.environ['LD_LIBRARY_PATH']='$LD_LIBRARY_PATH:/home/noahrl/.mujoco/mujoco200/bin'
 from .ant_env import AntEnv
 from .half_cheetah_cripple_env import CrippleHalfCheetahEnv
 from .ant_cripple_env import CrippleAntEnv
