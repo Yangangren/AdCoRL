@@ -490,8 +490,8 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
                     min_traj_losses * head_idx_bool, axis=1
                 ) / tf.compat.v1.maximum(tf.compat.v1.reduce_sum(head_idx_bool, axis=1), 1.0)
 
-            self.mse_loss = tf.compat.v1.reduce_sum(mse_loss)+self.contrastive_loss*5e-8
-            self.ie_mse_loss = tf.compat.v1.reduce_sum(ie_mse_loss)+self.contrastive_loss*5e-8
+            self.mse_loss = tf.compat.v1.reduce_sum(mse_loss)
+            self.ie_mse_loss = tf.compat.v1.reduce_sum(ie_mse_loss)
             self.norm_pred_error = tf.compat.v1.reduce_mean(min_traj_losses)
 
             # 2. Backward Dynamics Prediction Loss
@@ -737,6 +737,9 @@ class MCLMultiHeadedCaDMDynamicsModel(Serializable):
                     self.l2_reg_loss + self.back_l2_reg_loss
                 ) * self.weight_decay_coeff
 
+            self.loss += self.contrastive_loss*5e-8
+            self.ie_loss += self.contrastive_loss*5e-8
+            
             self.optimizer = optimizer(self.learning_rate)
             self.train_op = self.optimizer.minimize(self.loss)
             self.ie_train_op = self.optimizer.minimize(self.ie_loss)
