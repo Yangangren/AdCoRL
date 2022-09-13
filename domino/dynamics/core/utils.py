@@ -752,7 +752,7 @@ def create_ensemble_multiheaded_context_predictor(
 
         def infer_info_nce(ori_fea,online_ori_fea):
             shuffle_batch_fea = tf.transpose(ori_fea, perm=[1, 0, 2])
-            shuffle_batch_fea = tf.transpose(tf.random.shuffle(shuffle_batch_fea), perm=[1, 0, 2])
+            shuffle_batch_fea = tf.stop_gradient(tf.transpose(tf.random.shuffle(shuffle_batch_fea), perm=[1, 0, 2]))
             C = ori_fea.shape[-1]
             contrastive_loss = 0.0
             for i in range(5):
